@@ -16,6 +16,9 @@ public class PlayerDriver : MonoBehaviour
 
     private Vector2 input;
 
+    public float GetSpeedPercent() {
+        return input.magnitude;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +31,7 @@ public class PlayerDriver : MonoBehaviour
     {
         //this.transform.position += new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * speed * Time.deltaTime;
         input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        //Debug.Log("Input mag is " + input.magnitude);
     }
 
     private void FixedUpdate()
