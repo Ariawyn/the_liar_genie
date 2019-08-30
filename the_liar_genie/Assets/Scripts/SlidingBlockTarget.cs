@@ -11,6 +11,7 @@ public class SlidingBlockTarget : MonoBehaviour
             SlidingBlock sb = other.GetComponent<SlidingBlock>();
 
             sb.StopMe();
+            sb.isInFinalZone = true;
 
             Debug.Log("Nice place for a sliding block!");
         }

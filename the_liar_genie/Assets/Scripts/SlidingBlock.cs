@@ -16,27 +16,32 @@ public class SlidingBlock : MonoBehaviour
     public Vector3 boxCastSize;
 
     private Vector3 directionToPush = Vector3.zero;
+    public bool isInFinalZone = false;
+
+    private RigidbodyConstraints stayStillConstraint = RigidbodyConstraints.FreezeAll;
+    private RigidbodyConstraints allowSlideConstraint = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
     
     // Start is called before the first frame update
     void Start()
     {
         body = this.GetComponent<Rigidbody>();
-        body.constraints = RigidbodyConstraints.FreezeAll;
+        //body.constraints = stayStillConstraint;
     }
 
     private void FixedUpdate()
     {
+        
         this.directionToPush = GetDirectionToPush();
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && !isInFinalZone && this.directionToPush != Vector3.zero)
         {
-            body.constraints = RigidbodyConstraints.FreezeRotation;
+            body.constraints = allowSlideConstraint;
             Debug.Log("Jump pressed! DirectionToPush is " + directionToPush);
             this.body.AddForce(directionToPush.normalized * pushForce, ForceMode.Impulse);
         }
 
         else if (body.velocity.magnitude <= 0.25f) {
-            body.constraints = RigidbodyConstraints.FreezeAll;
+            body.constraints = stayStillConstraint;
             
         }
     }
@@ -51,11 +56,16 @@ public class SlidingBlock : MonoBehaviour
 
         foreach (Vector3 direction in vectorsToCheck) {
             
-            Vector3 startPos = this.transform.position; // assumes this is a cube.  + (0.5f*this.transform.localScale.x) * direction
+            Vector3 startPos = this.transform.position + this.transform.localScale.x/2 * direction - Vector3.up * this.transform.localScale.x/2.2f; // assumes this is a cube.  + (0.5f*this.transform.localScale.x) * direction
             RaycastHit hitInfo;
-            if (Physics.BoxCast(startPos, boxCastSize/2, direction, out hitInfo, Quaternion.identity, detectPlayerDistance)) {
+
+            //Debug.DrawLine(startPos, startPos + direction * detectPlayerDistance, Color.red);
+            //if (Physics.BoxCast(startPos, boxCastSize, direction, out hitInfo, Quaternion.identity, detectPlayerDistance)) {
+            if (Physics.Raycast(startPos, direction, out hitInfo, detectPlayerDistance))
+            {
                 if (hitInfo.collider.gameObject.GetComponent<PlayerDriver>() != null)
                 {
+                    Debug.Log("I see a player");
                     //if (hitInfo.collider.gameObject.GetComponent<PlayerDriver>().GetSpeedPercent() >= 0.85f)
                         directionTo = -direction;
                 }
@@ -70,14 +80,16 @@ public class SlidingBlock : MonoBehaviour
         foreach (Vector3 direction in vectorsToCheck)
         {
 
-            Vector3 startPos = this.transform.position;// + (0.5f * this.transform.localScale.x) * direction; // assumes this is a cube.
+            Vector3 startPos = this.transform.position + this.transform.localScale.x * direction - Vector3.up * this.transform.localScale.x / 2.2f;// + (0.5f * this.transform.localScale.x) * direction; // assumes this is a cube.
+                                                                                                                                            //RaycastHit hitInfo;
+
             RaycastHit hitInfo;
-            Gizmos.DrawWireCube(startPos, boxCastSize/2);
-            if (Physics.BoxCast(startPos, boxCastSize/2, direction, out hitInfo, Quaternion.identity, detectPlayerDistance))
-            {
-                if (hitInfo.collider.gameObject.CompareTag("Player"))
-                    Gizmos.DrawCube(startPos, boxCastSize/2);
-            }
+            //Gizmos.DrawWireCube(startPos + this.transform.localScale.x * -direction, boxCastSize/2);
+            //if (Physics.BoxCast(startPos, boxCastSize, direction, out hitInfo, Quaternion.identity, detectPlayerDistance))
+            //{
+            //   if (hitInfo.collider.gameObject.CompareTag("Player"))
+            //        Gizmos.DrawCube(startPos, boxCastSize/2);
+            //}
         }
     }
 }
