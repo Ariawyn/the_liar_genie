@@ -18,12 +18,15 @@ MonoBehaviour:
   dialogue_lines:
   - character_speaking_line: 1
     line_text: Hello there small one!
+    next_dialogue_line_index: 1
     available_responses: []
   - character_speaking_line: 0
     line_text: Hello to you too!
+    next_dialogue_line_index: 2
     available_responses: []
   - character_speaking_line: 1
     line_text: Have we met before
+    next_dialogue_line_index: 3
     available_responses:
     - response_text: Yes
       next_dialogue_line_index: 3
@@ -31,7 +34,9 @@ MonoBehaviour:
       next_dialogue_line_index: 4
   - character_speaking_line: 1
     line_text: Sad.
+    next_dialogue_line_index: -1
     available_responses: []
   - character_speaking_line: 1
     line_text: Great.
+    next_dialogue_line_index: -1
     available_responses: []

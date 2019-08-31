@@ -38,7 +38,26 @@ namespace DialogueSystem
                 speech_bubble_container.gameObject.SetActive(true);
             }
 
-            text_container.text = line.line_text;
+            text_container.text = "";
+
+            if(line.contains_a_lie)
+            {
+                text_container.text = "<color=#DC143C>" + line.line_text + "</color>";
+            }
+            else
+            {
+                StopAllCoroutines();
+                StartCoroutine(TypeLine(line.line_text));
+            }
+        }
+
+        IEnumerator TypeLine(string dialogue_line)
+        {
+            foreach (char letter in dialogue_line.ToCharArray())
+            {
+                text_container.text += letter;
+                yield return null;
+            }
         }
 
         public void DisplayDialogueResponses(DialogueResponse[] responses)

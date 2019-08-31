@@ -23,8 +23,9 @@ public class TestGenieSpeechController : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        Debug.Log("Interacting once with the Genie to start dialogue");
         has_been_interacted_with_once = true;
-        dialogue_manager.TriggerDialogueByDialogueInstanceName("genie_test_dialogue");
+        dialogue_manager.TriggerDialogueByDialogueInstanceName("genie_test_dialogue", true);
     }
 
     void OnCollisionEnter(Collision other)

@@ -14,8 +14,12 @@ namespace DialogueSystem
         private Dictionary<CharacterID, SpeechBubbleController> scene_character_to_speech_bubble_controller_mapping;
 
         private Dialogue currently_running_dialogue = null;
-        private int current_running_dialogue_current_line_index;
+        private int current_running_dialogue_current_line_index = -1;
+        private int current_running_dialogue_next_line_index = -1;
         private bool currently_has_response_choice_open = false;
+
+        private bool should_block_first_interact_press = false;
+        private bool has_blocked_first_interact_press = false;
 
         void Awake()
         {
@@ -38,11 +42,18 @@ namespace DialogueSystem
 
         void Update()
         {
-            if(currently_running_dialogue != null)
+            if((currently_running_dialogue != null))
             {
                 if(Input.GetKeyDown(KeyCode.E))
                 {
-                    HandleDialogueProgression();
+                    if(should_block_first_interact_press && !has_blocked_first_interact_press)
+                    { 
+                        has_blocked_first_interact_press = true;
+                    }
+                    else
+                    {
+                        HandleDialogueProgression();
+                    }
                 }
             }
         }
@@ -63,9 +74,14 @@ namespace DialogueSystem
             return result;
         }
 
-        public bool TriggerDialogueByDialogueInstanceName(string instance_name)
+        public bool TriggerDialogueByDialogueInstanceName(string instance_name, bool should_block_immediate_interact_for_first_dialogue_line)
         {
             bool success_result = false;
+
+            if(should_block_immediate_interact_for_first_dialogue_line)
+            {
+                should_block_first_interact_press = true;
+            }
 
             if(currently_running_dialogue == null)
             {
@@ -108,6 +124,8 @@ namespace DialogueSystem
             currently_running_dialogue = null;
             current_running_dialogue_current_line_index = -1;
             ClearAllSpeechBubbles();
+            should_block_first_interact_press = false;
+            has_blocked_first_interact_press = false;
         }
 
         public void HandleDialogueLineByIndex(int index)
@@ -117,6 +135,8 @@ namespace DialogueSystem
             DialogueLine current_dialogue_line = currently_running_dialogue.dialogue_lines[current_running_dialogue_current_line_index];
             CharacterID line_speaker = current_dialogue_line.character_speaking_line;
 
+            current_running_dialogue_next_line_index = current_dialogue_line.next_dialogue_line_index;
+
             ClearAllSpeechBubblesExceptFromSpecificCharacter(line_speaker);
             scene_character_to_speech_bubble_controller_mapping[line_speaker].DisplayDialogueLine(current_dialogue_line);
         }
@@ -124,9 +144,8 @@ namespace DialogueSystem
         public void HandleDialogueProgression()
         {
             DialogueLine current_dialogue_line = currently_running_dialogue.dialogue_lines[current_running_dialogue_current_line_index];
-            int next_dialogue_line_index = current_running_dialogue_current_line_index + 1;
             
-            if(next_dialogue_line_index >= currently_running_dialogue.dialogue_lines.Length)
+            if(current_running_dialogue_next_line_index >= currently_running_dialogue.dialogue_lines.Length || current_running_dialogue_next_line_index < 0)
             {
                 ClearDialogue();
             }
@@ -143,12 +162,7 @@ namespace DialogueSystem
                 }
                 else
                 {
-                    current_running_dialogue_current_line_index = next_dialogue_line_index;
-                    current_dialogue_line = currently_running_dialogue.dialogue_lines[current_running_dialogue_current_line_index];
-                    CharacterID line_speaker = current_dialogue_line.character_speaking_line;
-
-                    ClearAllSpeechBubblesExceptFromSpecificCharacter(line_speaker);
-                    scene_character_to_speech_bubble_controller_mapping[line_speaker].DisplayDialogueLine(current_dialogue_line);
+                    HandleDialogueLineByIndex(current_running_dialogue_next_line_index);
                 }
             }
         }
