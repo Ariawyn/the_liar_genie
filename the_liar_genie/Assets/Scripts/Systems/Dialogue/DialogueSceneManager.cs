@@ -9,7 +9,9 @@ namespace DialogueSystem
         public static DialogueSceneManager instance;
 
         [SerializeField] private Dialogue[] scene_dialogues;
-        [SerializeField] private Dictionary<CharacterID, SpeechBubbleController> scene_character_to_speech_bubble_controller_mapping;
+        [SerializeField] public CharacterIDToSpeechBubbleMappingStruct[] set_character_to_id_mapping_struct_values;
+
+        private Dictionary<CharacterID, SpeechBubbleController> scene_character_to_speech_bubble_controller_mapping;
 
         private Dialogue currently_running_dialogue = null;
         private int current_running_dialogue_current_line_index;
@@ -24,6 +26,13 @@ namespace DialogueSystem
             else 
             {
                 instance = this;
+            }
+
+            scene_character_to_speech_bubble_controller_mapping = new Dictionary<CharacterID, SpeechBubbleController>();
+
+            foreach(CharacterIDToSpeechBubbleMappingStruct map_entry in set_character_to_id_mapping_struct_values)
+            {
+                scene_character_to_speech_bubble_controller_mapping.Add(map_entry.character_id, map_entry.speech_bubble_controller);
             }
         }
 
@@ -98,6 +107,7 @@ namespace DialogueSystem
         {
             currently_running_dialogue = null;
             current_running_dialogue_current_line_index = -1;
+            ClearAllSpeechBubbles();
         }
 
         public void HandleDialogueLineByIndex(int index)
@@ -167,6 +177,17 @@ namespace DialogueSystem
             HandleDialogueLineByIndex(selected_response.next_dialogue_line_index);
         }
 
+        public void ClearAllSpeechBubbles()
+        {
+            foreach(CharacterID id in System.Enum.GetValues(typeof(CharacterID)))
+            {
+                if(scene_character_to_speech_bubble_controller_mapping[id].is_displaying)
+                {
+                    scene_character_to_speech_bubble_controller_mapping[id].ClearSpeechBubble();
+                }
+            }
+        }
+
         public void ClearAllSpeechBubblesExceptFromSpecificCharacter(CharacterID character_to_exclude_from_clearing)
         {
             foreach(CharacterID id in System.Enum.GetValues(typeof(CharacterID)))
@@ -180,5 +201,12 @@ namespace DialogueSystem
                 }
             }
         }
+    }
+
+    [System.Serializable]
+    public struct CharacterIDToSpeechBubbleMappingStruct
+    {
+        [SerializeField] public CharacterID character_id;
+        [SerializeField] public SpeechBubbleController speech_bubble_controller;
     }
 }

@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace DialogueSystem
 {
+    [System.Serializable]
     public class DialogueResponse 
     {
-        public string response_text;
-        public int next_dialogue_line_index;
+        [SerializeField] public string response_text;
+        [SerializeField] public int next_dialogue_line_index;
     }
 }
