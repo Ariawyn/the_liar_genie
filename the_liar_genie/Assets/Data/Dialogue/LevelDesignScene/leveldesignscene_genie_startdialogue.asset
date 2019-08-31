@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5774144c6b6e6354b8cb2383f47f0ca0, type: 3}
   m_Name: leveldesignscene_genie_startdialogue
   m_EditorClassIdentifier: 
-  dialogue_instance_title: 
+  dialogue_instance_title: leveldesignscene_genie_startdialogue
   is_speaking_with_character: 1
-  character_speaking_with: 0
+  character_speaking_with: 1
   dialogue_lines:
   - character_speaking_line: 1
     line_text: Oh, you're finally awake!
