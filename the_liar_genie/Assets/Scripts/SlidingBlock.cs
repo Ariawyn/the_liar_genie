@@ -38,17 +38,19 @@ public class SlidingBlock : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && !isInFinalZone && this.directionToPush != Vector3.zero)
         {
-            body.isKinematic = true;
+            body.isKinematic = false;
             body.constraints = allowSlideConstraint;
             Debug.Log("Jump pressed! DirectionToPush is " + directionToPush);
             this.body.AddForce(directionToPush.normalized * pushForce, ForceMode.Impulse);
         }
-        body.isKinematic = false;
+        else if (body.velocity.magnitude <= 0.25f)
+        body.isKinematic = true;
         //body.Sleep();
-        //else if (body.velocity.magnitude <= 0.25f) {
+        ////else if (body.velocity.magnitude <= 0.25f) {
         //    //body.constraints = stayStillConstraint;
-        //    body.Sleep();
-        //}
+        //    //body.Sleep();
+        //    //body.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        ////}
     }
 
     public void StopMe() {
