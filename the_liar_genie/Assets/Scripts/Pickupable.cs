@@ -9,6 +9,7 @@ public class Pickupable : MonoBehaviour
 
     Inventory currentInventoryUnheld;
     public Inventory currentInventoryHeld;
+    
 
     // Start is called before the first frame update
     void Start()
